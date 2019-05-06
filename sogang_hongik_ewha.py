@@ -8,8 +8,9 @@ def GetURL1(isbn, school):
 		return 'http://honors.hongik.ac.kr/search/tot/result?st=EXCT&si=6&q='+isbn
 	elif school==3:
 		return 'http://lib.ewha.ac.kr/search/tot/result?st=KWRD&si=TOTAL&service_type=brief&q='+isbn
+	elif school==4:
+		return "https://library.yonsei.ac.kr/main/searchBrief?q="+isbn
 
- 
 
 def GetURL2(detail, school):
 	if school==1:
@@ -19,27 +20,33 @@ def GetURL2(detail, school):
 	elif school==3:
 		return 'http://lib.ewha.ac.kr'+detail
 
+
 def isValid(url, school):
-	resp=requests.get(url)
+	if school == 4:
+		resp=requests.get(url, verify=False)
+	else:
+		resp=requests.get(url)
 	html=resp.text
-	soup=BeautifulSoup(html, 'html.parser')
+	soup=BeautifulSoup(html, 'lxml')
 	if school == 1 or school==2:
 		detail=soup.find_all("dd", "searchTitle")
 	elif school ==3:
 		detail=soup.find_all("dd", "book")
+	elif school == 4:
+		detail = soup.find_all("dt","listTitle")
 	check=str(detail)
 	if check == '[]':
 		return (False, None)
 	else:
 		return (True, detail)
 
-def FindInfo(url, school):	
+def FindInfo(url, school):
 	resp=requests.get(url)
 	html=resp.text
-	soup=BeautifulSoup(html, 'html.parser')
+	soup=BeautifulSoup(html, 'lxml')
 	tbody=soup.find_all("tbody")
 	tr=tbody[1].find_all("tr")
-	
+
 	info=[]
 	for row in tr:
 		td=row.find_all('td')
@@ -61,20 +68,22 @@ def FindInfo(url, school):
 	return info
 
 def main():
-	school=int(input('1. 서강대학교, 2. 홍익대학교, 3. 이화여자대학교 : '))
+	school=int(input('1. 서강대학교, 2. 홍익대학교, 3. 이화여자대학교 , 4.연세대학교: '))
 	isbn=input('ISBN : ')
 	url=GetURL1(isbn, school)
-	r=isValid(url, school)
-	if r[0]==False:
+	bookExistenceInfo=isValid(url, school)
+	if bookExistenceInfo[0]==False:
 		print('해당 도서가 도서관에 있지 않습니다.')
 		return;
 	else:
-		detail=r[1]
+		print('해당 도서가 존재합니다.')
+
+		detail=bookExistenceInfor[1]
 		detail=detail[0].find_all("a")[0].get('href')
 		url=GetURL2(detail, school)
 		info=FindInfo(url, school)
 		for book in info:
 			print(book)
-
+			"""
 if __name__ == '__main__':
 	main()
