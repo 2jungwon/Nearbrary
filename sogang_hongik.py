@@ -3,36 +3,30 @@ from bs4 import BeautifulSoup
 
 # 1차 크롤링 - isbn값을 통해, controlno값 : CAT뭐시기저시기를 받아온다.
 def GetURL1(isbn, school):
-	if school==1:
+    if school==1:
         return 'http://library.sogang.ac.kr/search/tot/result?st=EXCT&si=6&q='+isbn
-	elif school==2:
-
+    elif school == 2:
         return 'http://honors.hongik.ac.kr/search/tot/result?st=EXCT&si=6&q='+isbn
     elif school==4:
-            return 'https://library.yonsei.ac.kr/main/searchBrief?q='+isbn
+        return 'https://library.yonsei.ac.kr/main/searchBrief?q='+isbn
 #2차 크롤링 - 1차 크롤링을 통해 받아온 값을 이용해서 대출 가능 여부 정보를 가져온다.
-def GetURL2(bookid, school):
-
-		return 'http://honors.hongik.ac.kr/search/tot/result?st=EXCT&si=6&q='+isbn
-
 def GetURL2(detail, school):
-
-	if school==1:
-		return 'http://library.sogang.ac.kr'+detail
-	elif school==2:
-		return 'http://honors.hongik.ac.kr'+detail
+    if school==1:
+	return 'http://library.sogang.ac.kr'+detail
+    elif school==2:
+        return 'http://honors.hongik.ac.kr'+detail
 
 
 def isValid(url):
-	resp=requests.get(url)
-	html=resp.text
-	soup=BeautifulSoup(html, 'html.parser')
-	detail=soup.find_all("dd", "searchTitle")
-	check=str(detail)
-	if check == '[]':
-		return (False, None)
-	else:
-		return (True, detail)
+    resp=requests.get(url)
+    html=resp.text
+    soup=BeautifulSoup(html, 'html.parser')
+    detail=soup.find_all("dd", "searchTitle")
+    check=str(detail)
+    if check == '[]':
+        return (False, None)
+    else:
+        return (True, detail)
 
 def FindInfo(url):	
 	resp=requests.get(url)
@@ -68,31 +62,18 @@ def main():
             print('해당 도서가 도서관에 있지 않습니다.')
             return;
         else:
-            bookid=r[1]
-            bookid=str(bookid[0].get('id'))
-            bookid=parse("bookImg_{}", bookid)[0]
-            url=GetURL2(bookid, school)
+            detail=r[1]
+            detail=detail[0].find_all("a")[0].get('href')
+            url=GetURL2(detail, school)
             info=FindInfo(url)
             for book in info:
                 print(book)
+
+
     else:
         resp = request.get(url)
         html = resp.text
         soup = BeautifulSoup(html, 'lxml')
-
-	r=isValid(url)
-	if r[0]==False:
-		print('해당 도서가 도서관에 있지 않습니다.')
-		return;
-	else:
-		detail=r[1]
-		detail=detail[0].find_all("a")[0].get('href')
-		url=GetURL2(detail, school)
-		info=FindInfo(url)
-		for book in info:
-			print(book)
-
-
         get_bookSection = soup.find('div',{'class' : 'bookSection'})
         print(get_bookSection)
 if __name__ == '__main__':
