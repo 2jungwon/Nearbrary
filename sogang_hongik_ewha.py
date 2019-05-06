@@ -1,4 +1,4 @@
-import requests
+import requests, re, json
 from bs4 import BeautifulSoup
 
 def GetURL1(isbn, school):
@@ -77,13 +77,29 @@ def main():
 		return;
 	else:
 		print('해당 도서가 존재합니다.')
+		if school == 4:
+			# get으로 bs4에서 속성값을 뽑아내면, 뽑아낸 값의 타입은 자동으로 스트링이 되는 모양이다.
+			detail = bookExistenceInfo[1][0].find('a').get('href')
+			#print(type(detail))
+			ajaxprm_link = detail
+			ajaxprm_seqno = ajaxprm_link.split("/")[3]
+			ajaxprm_controlno = ajaxprm_seqno[3:]
+			ajaxprm_kind = 'Catalog'
+			ajaxprm_url = "https://library.yonsei.ac.kr/main/holdingAjax"
+			print(ajaxprm_controlno)
 
-		detail=bookExistenceInfor[1]
-		detail=detail[0].find_all("a")[0].get('href')
-		url=GetURL2(detail, school)
-		info=FindInfo(url, school)
-		for book in info:
-			print(book)
-			"""
+			#ajaxdata = "controlno="+ajaxprm_controlno+"&holdingType="+ajaxprm_kind
+			ajaxdata = {'conltrolno':ajaxprm_controlno, 'holdingType':ajaxprm_kind}
+			req_header = {'Content-Type: application/x-www-form-urlencoded; charset=UTF-8'}
+			res = requests.post(ajaxprm_url, headers = req_header, data = ajaxdata)
+			print(res)
+		else:
+			detail=bookExistenceInfor[1]
+			detail=detail[0].find_all("a")[0].get('href')
+			url=GetURL2(detail, school)
+			info=FindInfo(url, school)
+			for book in info:
+				print(book)
+
 if __name__ == '__main__':
 	main()
