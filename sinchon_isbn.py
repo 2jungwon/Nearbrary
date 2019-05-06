@@ -1,8 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning) # SSL ERROR Warning 제거
 
+# ISBN값과 학교번호를 받아 각 학교의 ISBN 완전일치 검색 결과 URL을 return하는 함수
+# 연세대학교의 경우 원주캠퍼스를 제거하기 위해 URL이 길어짐
 def GetURL1(isbn, school):
 	if school==1:
 		return 'http://library.sogang.ac.kr/search/tot/result?st=EXCT&si=6&q='+isbn
@@ -14,7 +16,7 @@ def GetURL1(isbn, school):
 		return 'https://library.yonsei.ac.kr/search/tot/result?st=EXCT&si=6&q='+isbn+'&folder_id=null&lmt0=YNLIB;GSISL;MUSEL;OTHER;UGSTL;YSLIB;ARCHL;BUSIL;KORCL;IOKSL;LAWSL;MULTL;MATHL;MUSIC&lmtsn=000000000006&lmtst=OR#'
 
  
-
+# 해당 도서의 상세페이지 URL을 return하는 함수
 def GetURL2(detail, school):
 	if school==1:
 		return 'http://library.sogang.ac.kr'+detail
@@ -25,6 +27,7 @@ def GetURL2(detail, school):
 	elif school==4:
 		return 'http://library.yonsei.ac.kr'+detail
 
+#ISBN 검색 결과 책이 존재하지 않으면 False를 return하고, 존재한다면 상세페이지로 넘어가는 URL이 있는 tag를 return
 def isValid(url, school):
 	resp=requests.get(url, verify=False)
 	html=resp.text
@@ -56,13 +59,13 @@ def FindInfo(url, school):
 		l=[]
 		i=0
 		for a in td:
-			if school==3:
+			if school==3: # 이화여대의 경우 column 개수가 다르고 불필요한 column이 있어 이를 따로 처리해주었음
 				if i==8: break
 				if i==5 or i==6: continue
 			else:
 				if i==6: break
 			b=a.text.strip()
-			b=b.replace("\t", "")
+			b=b.replace("\t", "") #문자열 앞뒤의 공백, 개행 제거
 			b=b.replace("\n", "")
 			b=b.replace("\r", "")
 			l.append(b)
@@ -80,8 +83,8 @@ def main():
 		print('해당 도서가 도서관에 있지 않습니다.')
 		return;
 	else:
-		detail=r[1]
-		detail=detail[0].find_all("a")[0].get('href')
+		detail=r[1] # tuple을 return했으므로 r[1]에 url에 관한 정보가 있음
+		detail=detail[0].find_all("a")[0].get('href') # 'href' 속성만 추출
 		url=GetURL2(detail, school)
 		info=FindInfo(url, school)
 		for book in info:
