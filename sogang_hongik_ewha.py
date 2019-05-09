@@ -87,11 +87,13 @@ def main():
 			ajaxprm_kind = 'Catalog'
 			ajaxprm_url = "https://library.yonsei.ac.kr/main/holdingAjax"
 			print(ajaxprm_controlno)
-
+#CAT000001770009 : 9788970508504
 			#ajaxdata = "controlno="+ajaxprm_controlno+"&holdingType="+ajaxprm_kind
 			ajaxdata = {'conltrolno':ajaxprm_controlno, 'holdingType':ajaxprm_kind}
-			req_header = {'Content-Type: application/x-www-form-urlencoded; charset=UTF-8'}
-			res = requests.post(ajaxprm_url, headers = req_header, data = ajaxdata)
+			#cookie = {'id' :  }
+			print(ajaxprm_controlno + ":" + ajaxprm_kind)
+			req_header = {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+			res = requests.post(url = ajaxprm_url, headers = req_header, data = ajaxdata, verify=False)
 			print(res)
 		else:
 			detail=bookExistenceInfor[1]
