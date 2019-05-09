@@ -39,7 +39,7 @@ def GetURL2(detail, school):
 	elif school is 3:
 		return 'https://lib.ewha.ac.kr'+detail
 	elif school is 4:
-		return 'https://honors.hongik.ac.kr'+detail	
+		return 'https://honors.hongik.ac.kr'+detail
 
 def GetLibInfo(url, school):
 	resp=requests.get(url, verify=False)
@@ -77,13 +77,13 @@ def DataTrim(temp, school):
 
 	elif school is 3:
 		book={'no': temp[0], 'location': temp[1], 'callno': temp[2], 'status': temp[3], 'returndate': temp[4], 'id': temp[5]}
-		
+
 	elif school is 4:
 		if '문' in temp[3][0]: return None
 		book={'no': temp[0], 'id': temp[1], 'callno': temp[2], 'location': temp[3], 'status': temp[4], 'returndate': temp[5]}
 
 	return book
-		
+
 
 
 def main():
@@ -101,8 +101,8 @@ def main():
 		elif i is 2: libinfo['yonsei']=books
 		elif i is 3: libinfo['ewha']=books
 		elif i is 4: libinfo['hongik']=books
-	
-	with open('libinfo.json', 'w', encoding="utf-8") as make_file:	
+
+	with open('libinfo.json', 'w', encoding="utf-8") as make_file:
 		json.dump(libinfo, make_file, ensure_ascii=False, indent="\t")
 
 if __name__ == '__main__':
