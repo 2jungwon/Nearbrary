@@ -77,7 +77,7 @@ def main():
 		return;
 	else:
 		print('해당 도서가 존재합니다.')
-		if school == 4:
+		if school == 4:#연세대학교가 4번.
 			# get으로 bs4에서 속성값을 뽑아내면, 뽑아낸 값의 타입은 자동으로 스트링이 되는 모양이다.
 			detail = bookExistenceInfo[1][0].find('a').get('href')
 			#print(type(detail))
@@ -95,6 +95,7 @@ def main():
 			req_header = {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'Accept':'application/json;charset=UTF-8', 'Content-Length':'42'}
 			req_cookie = {}
 			res = requests.post(ajaxprm_url, headers = req_header, data = ajaxdata, verify=False)
+			respond_json = res.json()
 
 			print(res.json())
 
