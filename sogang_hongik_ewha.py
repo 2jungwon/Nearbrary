@@ -96,7 +96,7 @@ def main():
 			req_cookie = {}
 			res = requests.post(ajaxprm_url, headers = req_header, data = ajaxdata, verify=False)
 			respond_json = res.json()
-			
+
 			print(res.json())
 
 		else:
